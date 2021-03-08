@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# shellcheck disable=SC1090
+# shellcheck disable=SC2015
+# shellcheck disable=SC2034
+
+lxdh_ver=1.07
+lib_path='/usr/local/include/osshelp/lxd-functions.sh'
+
+function show_usage() {
+    echo -e "Usage: ${0##*/} action [-f|--force] [-y=(URL|Path)|--ymlpath=(URL|Path)] [params]"
+    echo -e "\t deploy-container [-y=(URL|Path)] [--force] container_name"
+    echo -e "\t deploy-containers -y=(URL|Path) [--force]"
+    echo -e "\t download-image [-y=(URL|Path)] container_name"
+    echo -e "\t create-image container_name [image_name]"
+    echo -e "\t export-image image_name"
+    echo -e "\t update-image image_name"
+    echo -e "\t update-configs [/path/to/dir]"
+    exit 1
+}
+
+for param in "$@"; do
+    case $param in
+        create-image|export-image|update-image|deploy-container|deploy-containers|download-image|update-configs)
+            action="${param/-/_}"; shift
+        ;;
+        -f|--force)
+            force_mode="true"; shift
+        ;;
+        -s|--skipstart)
+            skip_start="true"; shift
+        ;;
+        -y=*|--yml=*)
+            yml_path="${param#*=}"; shift
+        ;;
+        -p=*|--profile=*)
+            selected_profile="${param#*=}"; shift
+        ;;
+        -t=*|--download-transport=*)
+            download_transport="${param#*=}"; shift
+        ;;
+        -*)
+            echo "Unknown param '$param'"
+            show_usage
+        ;;
+    esac
+done
+
+test -z "${action}" && show_usage
+
+test -f "${lib_path}" && . "${lib_path}" || \
+{ echo "Library ${lib_path} doesn't exist!"; exit 1; }
+
+check_lxd_version
+check_and_generate_config
+$action "$@"

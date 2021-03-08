@@ -1,0 +1,85 @@
+---
+version: 2
+containers:
+  demo-lxd:
+    source: https://oss.help/lxd/pub/demo/l/lxd-simple-latest.yml
+    image: https://oss.help/lxd/pub/demo/l/lxd-simple-latest.tar.gz
+    tests: https://oss.help/lxd/pub/demo/l/lxd-simple-latest.py
+    postdeploy-tests: https://oss.help/lxd/pub/demo/l/lxd-simple-postdeploy-latest.py
+    cloud-config:
+      bootcmd:
+        - cloud-init-per instance default_setup /usr/local/osshelp/default-setup FQDN
+    boot:
+      autostart: true
+      delay: 10
+      priority: 10
+    devices:
+      home:
+        path: /home
+        source: /mnt/data/containers/backend-prod/home
+      somedir:
+        path: /somedir
+        source: /mnt/data/containers/backend-prod/somedir
+        uid: 104
+        gid: 105
+        mode: 750
+      log:
+        path: /var/log
+        source: /mnt/data/containers/backend-prod/var/log
+        limits:
+          limits.write: 20MB
+          limits.read: 200iops
+      cron:
+        path: /var/spool/cron/crontabs
+        source: /mnt/data/containers/backend-prod/var/spool/cron/crontabs
+      osshelp:
+        path: /root/osshelp
+        source: /root/osshelp
+    limits:
+      cpu: 2
+      memory: 1GB
+    testinfra:
+      delay: 90
+    name: backend-prod
+    network:
+      eth0:
+        parent: lxdbr0
+        host_name: bnd-prd
+        ipv4_address: 10.140.109.30
+      eth1:
+        parent: vxbr0
+        host_name: vbnd-prd
+        ipv4_address: 192.13.113.30
+    environment:
+      env: production
+    privileged: false
+    role: backend production
+    description: 'nginx, php, nodejs'
+    profiles:
+      default:
+        netdata:
+          stream:
+            enabled: true
+            destination: netdata-master
+            api-key: 11111111-2222-3333-4444-555555555555
+        testinfra:
+          delay: 60
+      custom:
+        netdata:
+          stream:
+            enabled: false
+        testinfra:
+          delay: 70
+        limits:
+          cpu: 1
+          memory: 512MB
+        name: custom
+        network:
+          eth0:
+            parent: lxdbr0
+            host_name: custom
+            ipv4_address: 10.140.109.11
+        devices:
+          backup:
+            path: /backup
+            source: /mnt/data/containers/backend-custom/backup
