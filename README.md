@@ -26,12 +26,13 @@ LXHelper is just a wrapper around lxd-functions.sh library. For deployment you n
 
 1. Place lxd-function.sh library in the `/usr/local/include/osshelp/` path
 1. Place lxhelper script in the `/usr/local/sbin/` path
-1. Place the container YAML config in the `/usr/local/etc/lxc/` path (see EXAMPLES.md)
+1. Place the container YAML config in the `/usr/local/etc/lxc/` path (see examples dir)
 
 There’re install/update scripts in the repository. Command for installation (lxd-function.sh, lxhelper, yq and minio-client):
 
 ```shell
 curl -s https://oss.help/scripts/lxc/lxhelper/install.sh | bash
+```
 
 ### Options
 
@@ -46,8 +47,6 @@ create-image|create image from the container with the same name or with specifie
 export-image|export specified image to archive|`lxhelper export-image image_name`
 update-image|create and export container image from the container |`lxhelper update-image image_name`
 update-configs|update all YAML configs in specified path (default path /usr/local/etc/lxc/) |`lxhelper update-configs [/path/to/dir]`
-
-```
 
 ### Useful
 
