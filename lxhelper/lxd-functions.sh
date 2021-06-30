@@ -9,7 +9,7 @@
 ## TODO:
 ## - divide proceed_section() and download_image_for_container() to separate functions
 
-lxdf_ver=1.42
+lxdf_ver=1.43
 yml_current_ver=2
 yml_deprecated_ver=1
 min_lxd_ver='2.15'
@@ -734,7 +734,7 @@ function check_container() {
   test -r "${containers_cachedir}/${container_postdeploy_tests}" && container_local_postdeploy_tests="${container_postdeploy_tests}" || {
     test "${container_postdeploy_tests:0:7}" == "http://" -o "${container_tests:0:8}" == "https://" && {
       postdeploy_tests_filename=$( basename "${container_postdeploy_tests}" )
-      postdeploy_tests_version=$( sed -rn 's|\w+-(.+)\.py|\1|p' <<< "${postdeploy_tests_filename}" )
+      postdeploy_tests_version=$( sed -rn 's|\w+-(.+)\-postdeploy\.py|\1|p' <<< "${postdeploy_tests_filename}" )
       container_local_postdeploy_tests="${containers_cachedir}/tests/${container_name}/${postdeploy_tests_version}/${container_name}-postdeploy.py"
     }
   }
