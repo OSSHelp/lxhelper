@@ -484,22 +484,22 @@ function set_network_parameters_for_container() {
       }
 
       test "${iface_name}" != "none" && {
-        show_notice "Setting interface name to veth-${iface_name} for ${container_name}"
+        show_notice "Setting interface name to veth-${iface_name} for ${container_interface} from ${container_name}"
         lxc config device set "${container_name}" "${container_interface}" "host_name" "veth-${iface_name}" || \
           show_fatal "Failed to set interface name for ${container_name}"
       }
       test "${mac_address}" != "none" && {
-        show_notice "Setting fixed MAC address to ${mac_address} for ${container_name}"
+        show_notice "Setting fixed MAC address to ${mac_address} for ${container_interface} from ${container_name}"
         lxc config set "${container_name}" "volatile.${container_interface}.hwaddr" "${mac_address}" || \
           show_fatal "Failed to set fixed MAC address for ${container_name}"
       }
       test "${ipv4_address}" != "none" && {
-        show_notice "Setting fixed IPv4 address to ${ipv4_address} for ${container_name}"
+        show_notice "Setting fixed IPv4 address to ${ipv4_address} for ${container_interface} from ${container_name}"
         lxc config device set "${container_name}" "${container_interface}" "ipv4.address" "${ipv4_address}" || \
           show_fatal "Failed to set fixed IPv4 address for ${container_name}"
       }
       test "${ipv6_address}" != "none" && {
-        show_notice "Setting fixed IPv6 address to ${ipv6_address} for ${container_name}"
+        show_notice "Setting fixed IPv6 address to ${ipv6_address} for ${container_interface} from ${container_name}"
         lxc config device set "${container_name}" "${container_interface}" "ipv6.address" "${ipv6_address}" || \
           show_fatal "Failed to set fixed IPv6 address for ${container_name}"
       }
