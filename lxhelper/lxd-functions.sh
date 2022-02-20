@@ -9,7 +9,7 @@
 ## TODO:
 ## - divide proceed_section() and download_image_for_container() to separate functions
 
-lxdf_ver=1.43
+lxdf_ver=1.44
 yml_current_ver=2
 yml_deprecated_ver=1
 min_lxd_ver='2.15'
@@ -93,16 +93,19 @@ function get_container_os() {
 }
 
 function wait_for_container_to_boot() {
-  local container_name="${1}"; local image_release; local err=1
+  local container_name="${1}"; local err=1
   container_is_running "${container_name}" && {
     show_notice "Waiting up to ${container_wait}s for container to fully boot"
-    image_release=$($yq_cmd r <(lxc config show "${container_name}") "config.[image.release]")
-    test "${image_release:-none}" != xenial -a "${image_release:-none}" != bionic -a "${image_release:-none}" != disco && return 0
+    lxc exec "${container_name}" -- bash -c 'command -v systemctl >/dev/null' || \
+      return "${err}"
     i=${container_wait}
     while [ "${i}" -gt 0 ]; do
-      lxc exec "${container_name}" -- bash -c 'while [ "$(systemctl is-system-running 2>/dev/null)" != "running" ] && [ "$(systemctl is-system-running 2>/dev/null)" != "degraded" ]; do :; done'
-      err=${?}
-      test "${err}" -eq 0 && break
+      system_state=$(lxc exec "${container_name}" -- bash -c 'systemctl is-system-running 2>/dev/null')
+      test "${system_state}" == "running" -o "${system_state}" == "degraded" && {
+        test "${system_state}" == "running" && \
+          err=0
+        break
+      }
       sleep 1
       i=$((i-1))
     done

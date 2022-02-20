@@ -5,7 +5,7 @@ umask 0077
 export LANG=C
 export LC_ALL=C
 
-declare -r lxdf_ver=1.43
+declare -r lxdf_ver=1.44
 declare -r lxdh_ver=1.07
 silent=no
 tmpdir="${TEMP:=/tmp}"
